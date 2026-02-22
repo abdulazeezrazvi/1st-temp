@@ -32,6 +32,8 @@
 
   <body>
     <a-scene
+      embedded
+      renderer="precision: mediump"
       mindar-image="imageTargetSrc: targets.mind;"
       vr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: true"
@@ -170,10 +172,6 @@
     ></a-scene>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        /* -------------------------
-     ELEMENT REFERENCES
-  -------------------------- */
-
         const target = document.querySelector("[mindar-image-target]");
         const panel = document.querySelector("a-plane[color='#0f172a']");
 
@@ -189,48 +187,67 @@
         );
 
         /* -------------------------
-     TARGET FOUND ANIMATION
+     RESET FUNCTION
+  -------------------------- */
+
+        function resetAll() {
+          // Remove old animations completely
+          panel.removeAttribute("animation__slide");
+
+          buttons.forEach((btn) => {
+            btn.removeAttribute("animation__up");
+            btn.removeAttribute("animation__bounce");
+          });
+
+          // Reset panel outside
+          panel.setAttribute("position", "1.3 0.55 0");
+
+          // Reset buttons below
+          buttons.forEach((btn, index) => {
+            const pos = originalPositions[index];
+            btn.setAttribute("position", `${pos.x} -0.9 0.05`);
+            btn.setAttribute("scale", "1 1 1");
+          });
+        }
+
+        /* -------------------------
+     TARGET FOUND
   -------------------------- */
 
         target.addEventListener("targetFound", () => {
-          // Reset panel position before animation
-          panel.setAttribute("position", "1.3 0.55 0");
+          resetAll(); // Important
 
-          panel.setAttribute("animation__slide", {
-            property: "position",
-            from: "1.3 0.55 0",
-            to: "0 0.55 0",
-            dur: 800,
-            easing: "easeOutElastic",
-          });
-
-          // Animate buttons upward
-          buttons.forEach((btn, index) => {
-            const pos = originalPositions[index];
-
-            btn.setAttribute("position", `${pos.x} -0.9 0.05`);
-
-            btn.setAttribute("animation__up", {
+          setTimeout(() => {
+            // Slide panel
+            panel.setAttribute("animation__slide", {
               property: "position",
-              from: `${pos.x} -0.9 0.05`,
-              to: `${pos.x} -0.45 0.05`,
-              dur: 600 + index * 150,
-              easing: "easeOutBack",
+              from: "1.3 0.55 0",
+              to: "0 0.55 0",
+              dur: 800,
+              easing: "easeOutElastic",
             });
-          });
+
+            // Animate buttons up
+            buttons.forEach((btn, index) => {
+              const pos = originalPositions[index];
+
+              btn.setAttribute("animation__up", {
+                property: "position",
+                from: `${pos.x} -0.9 0.05`,
+                to: `${pos.x} -0.45 0.05`,
+                dur: 600 + index * 150,
+                easing: "easeOutBack",
+              });
+            });
+          }, 50);
         });
 
         /* -------------------------
-     TARGET LOST RESET
+     TARGET LOST
   -------------------------- */
 
         target.addEventListener("targetLost", () => {
-          panel.setAttribute("position", "1.3 0.55 0");
-
-          buttons.forEach((btn, index) => {
-            const pos = originalPositions[index];
-            btn.setAttribute("position", `${pos.x} -0.9 0.05`);
-          });
+          resetAll();
         });
 
         /* -------------------------
@@ -238,30 +255,19 @@
   -------------------------- */
 
         function bounce(btn) {
-          btn.setAttribute("animation__bounce", {
-            property: "scale",
-            from: "1 1 1",
-            to: "1.3 1.3 1.3",
-            dur: 150,
-            dir: "alternate",
-            loop: 1,
-          });
+          btn.removeAttribute("animation__bounce");
+
+          setTimeout(() => {
+            btn.setAttribute("animation__bounce", {
+              property: "scale",
+              from: "1 1 1",
+              to: "1.3 1.3 1.3",
+              dur: 150,
+              dir: "alternate",
+              loop: 1,
+            });
+          }, 10);
         }
-
-        /* -------------------------
-     GLOW PULSE EFFECT
-  -------------------------- */
-
-        buttons.forEach((btn) => {
-          btn.setAttribute("animation__glow", {
-            property: "material.emissiveIntensity",
-            from: 0.3,
-            to: 0.9,
-            dur: 1200,
-            dir: "alternate",
-            loop: true,
-          });
-        });
 
         /* -------------------------
      CLICK ACTIONS
