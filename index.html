@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="english">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>Premium AR Business Card</title>
+    <title>AR Business Card</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- A-Frame -->
@@ -15,34 +15,44 @@
       body {
         margin: 0;
         overflow: hidden;
-        font-family: Arial, sans-serif;
-        background: black;
+      }
+      #hint {
+        position: fixed;
+        bottom: 10px;
+        width: 100%;
+        text-align: center;
+        color: #fff;
+        font-family: Arial;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 10px;
+        z-index: 999;
       }
     </style>
   </head>
 
   <body>
     <a-scene
-      mindar-image="imageTargetSrc: targets.mind; autoStart: true;"
+      mindar-image="imageTargetSrc: targets.mind;"
       vr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: true"
-      embedded
-      renderer="colorManagement: true, physicallyCorrectLights: true"
     >
-      <!-- CAMERA -->
       <a-camera
         position="0 0 0"
         look-controls="enabled: false"
-        cursor="rayOrigin: mouse"
-        raycaster="objects: .clickable"
+        cursor="fuse: false; rayOrigin: mouse;"
+        raycaster="far: ${customFields.libVersion}; objects: .clickable"
       ></a-camera>
 
-      <!-- LIGHTS (More Premium Look) -->
-      <a-light type="ambient" intensity="0.8"></a-light>
-      <a-light type="directional" position="0 1 1" intensity="0.6"></a-light>
+      <a-camera
+        position="0 0 0"
+        look-controls="enabled: false"
+        cursor="fuse: false; rayOrigin: mouse;"
+        raycaster="near: 0; far: 1000; objects: .clickable"
+      >
+      </a-camera>
 
       <!-- IMAGE TARGET -->
-      <a-entity mindar-image-target="targetIndex: 0" id="target">
+      <a-entity mindar-image-target="targetIndex: 0">
         <!-- CARD BASE -->
         <a-plane
           src="1.png"
@@ -50,17 +60,18 @@
           height="0.6"
           position="0 0 0"
           material="transparent: true"
-        ></a-plane>
+        >
+        </a-plane>
 
-        <!-- PROFILE PANEL (Slide-in Right) -->
+        <!-- PROFILE PANEL (RIGHT SIDE) -->
         <a-plane
-          id="profilePanel"
           width="0.6"
           height="0.45"
-          position="1.5 0 0.02"
+          position="0 0.55 0"
           color="#0f172a"
-          opacity="0.95"
+          animation="property: position; from: 1.3 0 0; to: 0.85 0 0; dur: 800; easing: easeOutElastic"
         >
+          <!-- NAME -->
           <a-text
             value="Abdul Azeez Razvi"
             position="0 0.15 0.01"
@@ -70,6 +81,7 @@
           >
           </a-text>
 
+          <!-- ROLE -->
           <a-text
             value="Raza Online Services"
             position="0 0.05 0.01"
@@ -79,6 +91,7 @@
           >
           </a-text>
 
+          <!-- LOCATION -->
           <a-text
             value="Davanagere"
             position="0 -0.05 0.01"
@@ -89,101 +102,137 @@
           </a-text>
         </a-plane>
 
-        <!-- BUTTONS WITH GLOW + ANIMATION -->
+        <!-- ICON BUTTONS (BOTTOM ROW) -->
 
-        <!-- MAP -->
         <a-plane
           id="btn-map"
           class="clickable"
           position="-0.30 -0.45 0.05"
-          width="0.18"
-          height="0.18"
-          material="color:#22c55e; emissive:#22c55e; emissiveIntensity:0.6"
-          animation__enter="property: position; from: -0.30 -0.9 0.05; to: -0.30 -0.45 0.05; dur:600; easing:easeOutBack"
+          width="0.16"
+          height="0.16"
+          color="#22c55e"
         >
           <a-image
             src="icons/map.png"
-            width="0.11"
-            height="0.11"
+            width="0.1"
+            height="0.1"
             position="0 0 0.01"
           ></a-image>
         </a-plane>
 
-        <!-- CALL -->
         <a-plane
           id="btn-call"
           class="clickable"
           position="-0.10 -0.45 0.05"
-          width="0.18"
-          height="0.18"
-          material="color:#0ea5e9; emissive:#0ea5e9; emissiveIntensity:0.6"
-          animation__enter="property: position; from: -0.10 -0.9 0.05; to: -0.10 -0.45 0.05; dur:700; easing:easeOutBack"
+          width="0.16"
+          height="0.16"
+          color="#0ea5e9"
         >
           <a-image
             src="icons/call.png"
-            width="0.11"
-            height="0.11"
+            width="0.1"
+            height="0.1"
             position="0 0 0.01"
           ></a-image>
         </a-plane>
 
-        <!-- WHATSAPP -->
         <a-plane
           id="btn-whatsapp"
           class="clickable"
           position="0.10 -0.45 0.05"
-          width="0.18"
-          height="0.18"
-          material="color:#25D366; emissive:#25D366; emissiveIntensity:0.6"
-          animation__enter="property: position; from: 0.10 -0.9 0.05; to: 0.10 -0.45 0.05; dur:800; easing:easeOutBack"
+          width="0.16"
+          height="0.16"
+          color="#25D366"
         >
           <a-image
             src="icons/whatsapp.png"
-            width="0.11"
-            height="0.11"
+            width="0.1"
+            height="0.1"
             position="0 0 0.01"
           ></a-image>
         </a-plane>
 
-        <!-- INSTAGRAM -->
         <a-plane
           id="btn-instagram"
           class="clickable"
           position="0.30 -0.45 0.05"
-          width="0.18"
-          height="0.18"
-          material="color:#e11d48; emissive:#e11d48; emissiveIntensity:0.6"
-          animation__enter="property: position; from: 0.30 -0.9 0.05; to: 0.30 -0.45 0.05; dur:900; easing:easeOutBack"
+          width="0.16"
+          height="0.16"
+          color="#e11d48"
         >
           <a-image
             src="icons/instagram.png"
-            width="0.11"
-            height="0.11"
+            width="0.1"
+            height="0.1"
             position="0 0 0.01"
           ></a-image>
-        </a-plane>
-      </a-entity>
-    </a-scene>
-
+        </a-plane> </a-entity
+    ></a-scene>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        const panel = document.querySelector("#profilePanel");
-        const target = document.querySelector("#target");
+        document.querySelector("#btn-map").addEventListener("click", () => {
+          window.open("https://maps.google.com/?q=Davanagere", "_blank");
+        });
 
-        /* Slide Panel When Target Found */
+        document.querySelector("#btn-call").addEventListener("click", () => {
+          window.open("tel:9741366349", "_self");
+        });
+
+        document
+          .querySelector("#btn-whatsapp")
+          .addEventListener("click", () => {
+            window.open("https://wa.me/919741366349", "_blank");
+          });
+        alert("Button clicked");
+
+        document
+          .querySelector("#btn-instagram")
+          .addEventListener("click", () => {
+            window.open("https://instagram.com/YOUR_USERNAME", "_blank");
+          });
+      });
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const target = document.querySelector("[mindar-image-target]");
+        const panel = document.querySelector("a-plane[color='#0f172a']");
+
+        const buttons = [
+          document.querySelector("#btn-map"),
+          document.querySelector("#btn-call"),
+          document.querySelector("#btn-whatsapp"),
+          document.querySelector("#btn-instagram"),
+        ];
+
+        /* ---------------------------
+     PANEL SLIDE WHEN TARGET FOUND
+  ---------------------------- */
         target.addEventListener("targetFound", () => {
-          panel.setAttribute("animation", {
+          panel.setAttribute("animation__slide", {
             property: "position",
-            from: "1.5 0 0.02",
-            to: "0.85 0 0.02",
+            from: "1.3 0 0",
+            to: "0 0.55 0",
             dur: 800,
             easing: "easeOutElastic",
           });
+
+          // Animate buttons up
+          buttons.forEach((btn, index) => {
+            btn.setAttribute("animation__up", {
+              property: "position",
+              from: btn.getAttribute("position").x + " -0.9 0.05",
+              to: btn.getAttribute("position").x + " -0.45 0.05",
+              dur: 600 + index * 150,
+              easing: "easeOutBack",
+            });
+          });
         });
 
-        /* Button Bounce Effect */
+        /* ---------------------------
+     BUTTON BOUNCE EFFECT
+  ---------------------------- */
         function bounce(btn) {
-          btn.setAttribute("animation__click", {
+          btn.setAttribute("animation__bounce", {
             property: "scale",
             from: "1 1 1",
             to: "1.3 1.3 1.3",
@@ -192,6 +241,24 @@
             loop: 1,
           });
         }
+
+        /* ---------------------------
+     GLOW PULSE EFFECT
+  ---------------------------- */
+        buttons.forEach((btn) => {
+          btn.setAttribute("animation__glow", {
+            property: "material.emissiveIntensity",
+            from: 0.2,
+            to: 0.8,
+            dur: 1000,
+            dir: "alternate",
+            loop: true,
+          });
+        });
+
+        /* ---------------------------
+     CLICK ACTIONS (SAME AS YOURS)
+  ---------------------------- */
 
         document
           .querySelector("#btn-map")
@@ -204,7 +271,7 @@
           .querySelector("#btn-call")
           .addEventListener("click", function () {
             bounce(this);
-            window.location.href = "tel:9741366349";
+            window.open("tel:9741366349", "_self");
           });
 
         document
