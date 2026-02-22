@@ -55,7 +55,7 @@
       <a-entity mindar-image-target="targetIndex: 0">
         <!-- CARD BASE -->
         <a-plane
-          src="1.png"
+          src="1.jpg"
           width="1"
           height="0.6"
           position="0 0 0"
@@ -103,8 +103,9 @@
         </a-plane>
 
         <!-- ICON BUTTONS (BOTTOM ROW) -->
-
-        <a-plane
+        <a-plane id="box" position="0 -1 0">
+          
+          <a-plane
           id="btn-map"
           class="clickable"
           position="-0.30 -0.45 0.05"
@@ -137,9 +138,9 @@
         </a-plane>
 
         <a-plane
-          id="btn-whatsapp"
-          class="clickable"
-          position="0.10 -0.45 0.05"
+        id="btn-whatsapp"
+        class="clickable"
+        position="0.10 -0.45 0.05"
           width="0.16"
           height="0.16"
           color="#25D366"
@@ -167,7 +168,8 @@
             position="0 0 0.01"
           ></a-image>
         </a-plane> </a-entity
-    ></a-scene>
+        ></a-scene>
+      </a-plane>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         document.querySelector("#btn-map").addEventListener("click", () => {
@@ -191,6 +193,58 @@
             window.open("https://instagram.com/YOUR_USERNAME", "_blank");
           });
       });
+      
     </script>
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const target = document.querySelector("[mindar-image-target]");
+  const box = document.querySelector("#box");
+
+  let active = false;
+
+  /* ---------- SHOW (UP FROM BACKSIDE) ---------- */
+  target.addEventListener("targetFound", () => {
+
+    if (!active) {
+      active = true;
+
+      // Reset position first
+      box.removeAttribute("animation");
+      box.setAttribute("position", "0 -1 0");
+
+      setTimeout(() => {
+        box.setAttribute("animation", {
+          property: "position",
+          from: "0 -1 0",
+          to: "0 -0.45 0",
+          dur: 700,
+          easing: "easeOutCubic"
+        });
+      }, 50);
+
+    }
+
+  });
+
+  /* ---------- HIDE (DOWN TO BACKSIDE) ---------- */
+  target.addEventListener("targetLost", () => {
+
+    active = false;
+
+    box.removeAttribute("animation");
+
+    box.setAttribute("animation", {
+      property: "position",
+      from: "0 -0.45 0",
+      to: "0 -1 0",
+      dur: 400,
+      easing: "easeInCubic"
+    });
+
+  });
+
+});
+</script>
   </body>
 </html>
