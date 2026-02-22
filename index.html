@@ -2,10 +2,13 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Professional AR Business Card</title>
+    <title>AR Business Card</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+
+    <!-- MindAR -->
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
     <style>
@@ -26,11 +29,12 @@
     missTolerance: 8;
     warmupTolerance: 8;
   "
-      vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: true"
+      vr-mode-ui="enabled:false"
+      device-orientation-permission-ui="enabled:true"
       embedded
       renderer="precision: mediump; logarithmicDepthBuffer: true;"
     >
+      <!-- SINGLE CAMERA (FIXED) -->
       <a-camera
         position="0 0 0"
         look-controls="enabled:false"
@@ -39,175 +43,160 @@
       >
       </a-camera>
 
-      <!-- TARGET -->
+      <!-- IMAGE TARGET -->
       <a-entity mindar-image-target="targetIndex: 0" id="target">
-        <!-- REAL SIZE CARD -->
+        <!-- CARD -->
         <a-plane
           src="1.png"
           width="1"
-          height="0.6"
+          height="0.57"
           position="0 0 0"
-          material="transparent: true"
+          material="transparent:true"
         >
         </a-plane>
 
-        <!-- FLOATING INFO PANEL -->
+        <!-- PROFILE PANEL -->
         <a-plane
-          id="infoPanel"
-          width="0.09"
-          height="0.05"
-          color="#6b21a8"
-          opacity="0.95"
-          position="0 0.08 0.01"
+          id="panel"
+          width="0.6"
+          height="0.45"
+          position="1.2 0 0.02"
+          color="#0f172a"
           visible="false"
         >
           <a-text
-            value="user name"
-            position="0 0.015 0.01"
+            value="Abdul Azeez Razvi"
+            position="0 0.15 0.01"
             align="center"
-            width="0.2"
+            color="#38bdf8"
+            width="1.2"
+          ></a-text>
+
+          <a-text
+            value="Raza Online Services"
+            position="0 0.05 0.01"
+            align="center"
             color="#ffffff"
-          >
-          </a-text>
+            width="1"
+          ></a-text>
 
           <a-text
-            value="worker"
-            position="0 0 0.01"
+            value="Davanagere"
+            position="0 -0.05 0.01"
             align="center"
-            width="0.18"
-            color="#d1d5db"
-          >
-          </a-text>
-
-          <a-text
-            value="9741366349"
-            position="0 -0.015 0.01"
-            align="center"
-            width="0.18"
-            color="#ffffff"
-          >
-          </a-text>
-
-          <a-text
-            value="davanagere"
-            position="0 -0.03 0.01"
-            align="center"
-            width="0.18"
-            color="#e5e7eb"
-          >
-          </a-text>
+            color="#94a3b8"
+            width="1"
+          ></a-text>
         </a-plane>
 
         <!-- BUTTONS -->
         <a-plane
+          id="btn-map"
+          class="clickable"
+          position="-0.30 -0.45 0.05"
+          width="0.16"
+          height="0.16"
+          color="#22c55e"
+          visible="false"
+        ></a-plane>
+
+        <a-plane
           id="btn-call"
           class="clickable"
-          width="0.02"
-          height="0.02"
+          position="-0.10 -0.45 0.05"
+          width="0.16"
+          height="0.16"
           color="#0ea5e9"
-          position="-0.03 -0.06 0.01"
           visible="false"
-        >
-        </a-plane>
+        ></a-plane>
 
         <a-plane
           id="btn-whatsapp"
           class="clickable"
-          width="0.02"
-          height="0.02"
+          position="0.10 -0.45 0.05"
+          width="0.16"
+          height="0.16"
           color="#25D366"
-          position="0 -0.06 0.01"
           visible="false"
-        >
-        </a-plane>
+        ></a-plane>
 
         <a-plane
-          id="btn-map"
+          id="btn-instagram"
           class="clickable"
-          width="0.02"
-          height="0.02"
-          color="#22c55e"
-          position="0.03 -0.06 0.01"
+          position="0.30 -0.45 0.05"
+          width="0.16"
+          height="0.16"
+          color="#e11d48"
           visible="false"
-        >
-        </a-plane>
+        ></a-plane>
       </a-entity>
     </a-scene>
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         const target = document.querySelector("#target");
-        const panel = document.querySelector("#infoPanel");
+        const panel = document.querySelector("#panel");
+
+        const btnMap = document.querySelector("#btn-map");
         const btnCall = document.querySelector("#btn-call");
         const btnWhatsapp = document.querySelector("#btn-whatsapp");
-        const btnMap = document.querySelector("#btn-map");
+        const btnInstagram = document.querySelector("#btn-instagram");
 
-        let isActive = false;
+        const buttons = [btnMap, btnCall, btnWhatsapp, btnInstagram];
 
-        function animateSequential() {
+        let isVisible = false;
+
+        /* ---------- SHOW ANIMATION ---------- */
+        function playAnimation() {
           panel.setAttribute("visible", true);
-          btnCall.setAttribute("visible", true);
-          btnWhatsapp.setAttribute("visible", true);
-          btnMap.setAttribute("visible", true);
+          buttons.forEach((btn) => btn.setAttribute("visible", true));
 
-          panel.setAttribute("scale", "0 0 0");
-          btnCall.setAttribute("scale", "0 0 0");
-          btnWhatsapp.setAttribute("scale", "0 0 0");
-          btnMap.setAttribute("scale", "0 0 0");
+          panel.setAttribute("position", "1.2 0 0.02");
 
-          setTimeout(() => {
-            panel.setAttribute("animation", {
-              property: "scale",
-              to: "1 1 1",
-              dur: 400,
-              easing: "easeOutBack",
-            });
-          }, 100);
+          panel.setAttribute("animation", {
+            property: "position",
+            to: "0.85 0 0.02",
+            dur: 700,
+            easing: "easeOutCubic",
+          });
 
-          setTimeout(() => {
-            btnCall.setAttribute("animation", {
-              property: "scale",
-              to: "1 1 1",
-              dur: 300,
-              easing: "easeOutBack",
-            });
-          }, 500);
+          buttons.forEach((btn, index) => {
+            btn.setAttribute("scale", "0 0 0");
 
-          setTimeout(() => {
-            btnWhatsapp.setAttribute("animation", {
-              property: "scale",
-              to: "1 1 1",
-              dur: 300,
-              easing: "easeOutBack",
-            });
-          }, 700);
-
-          setTimeout(() => {
-            btnMap.setAttribute("animation", {
-              property: "scale",
-              to: "1 1 1",
-              dur: 300,
-              easing: "easeOutBack",
-            });
-          }, 900);
+            setTimeout(
+              () => {
+                btn.setAttribute("animation", {
+                  property: "scale",
+                  to: "1 1 1",
+                  dur: 300,
+                  easing: "easeOutBack",
+                });
+              },
+              300 + index * 150,
+            );
+          });
         }
 
+        /* ---------- TARGET EVENTS ---------- */
         target.addEventListener("targetFound", () => {
-          if (!isActive) {
-            isActive = true;
-            animateSequential();
+          if (!isVisible) {
+            isVisible = true;
+            playAnimation();
           }
         });
 
         target.addEventListener("targetLost", () => {
-          isActive = false;
+          isVisible = false;
+
           panel.setAttribute("visible", false);
-          btnCall.setAttribute("visible", false);
-          btnWhatsapp.setAttribute("visible", false);
-          btnMap.setAttribute("visible", false);
+          buttons.forEach((btn) => btn.setAttribute("visible", false));
         });
 
-        /* Click Actions */
+        /* ---------- CLICK ACTIONS ---------- */
+        btnMap.addEventListener("click", () => {
+          window.open("https://maps.google.com/?q=Davanagere", "_blank");
+        });
+
         btnCall.addEventListener("click", () => {
           window.location.href = "tel:9741366349";
         });
@@ -216,8 +205,8 @@
           window.open("https://wa.me/919741366349", "_blank");
         });
 
-        btnMap.addEventListener("click", () => {
-          window.open("https://maps.google.com/?q=davanagere", "_blank");
+        btnInstagram.addEventListener("click", () => {
+          window.open("https://instagram.com/YOUR_USERNAME", "_blank");
         });
       });
     </script>
